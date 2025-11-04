@@ -3,27 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Portal de Notícias{% endblock %}</title>
+    <title>{% block title %}Conecta ZL: Notícias que nos unem{% endblock %}</title>
     {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Almarai:wght@700;800&family=Kameron:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
     <nav>
         <div class="nav-container">
-            <a href="{% url 'home' %}" class="nav-brand">📰 Portal de Notícias</a>
+            <a href="{% url 'home' %}" class="nav-brand">
+                <span class="brand-icon">C</span>
+                <span class="brand-text">Conecta ZL</span>
+                <span class="brand-tagline">Notícias que nos unem</span>
+            </a>
             <div class="nav-links">
+                <a href="{% url 'home' %}" class="nav-link">INÍCIO</a>
+                <a href="{% url 'highlights' %}" class="nav-link">DESTAQUES</a>
+                <a href="{% url 'news_feed' %}" class="nav-link">NOTÍCIAS</a>
+                
                 {% if user.is_authenticated %}
-                    {% if user.profile.role == 'admin' %}
-                        <a href="{% url 'admin_dashboard' %}" class="nav-link">🎛️ Dashboard</a>
-                    {% endif %}
-                    {% if user.profile.role == 'jornalista' or user.profile.role == 'admin' %}
-                        <a href="{% url 'article_create' %}" class="nav-link">✍️ Criar Artigo</a>
-                    {% endif %}
-                    <span class="nav-link">Olá, <strong>{{ user.username }}</strong></span>
-                    <a href="{% url 'logout' %}" class="nav-link">Sair</a>
+                    <div class="nav-user-menu">
+                        <button class="nav-user-button">
+                            <span class="user-avatar">{{ user.username|slice:":1"|upper }}</span>
+                        </button>
+                    </div>
                 {% else %}
-                    <a href="{% url 'login' %}" class="nav-link">Entrar</a>
-                    <a href="{% url 'register' %}" class="nav-link btn-primary">Registrar</a>
+                    <a href="{% url 'login' %}" class="nav-link nav-link-auth">Entrar</a>
+                    <a href="{% url 'register' %}" class="nav-link nav-link-register">Registrar</a>
                 {% endif %}
             </div>
         </div>
@@ -47,7 +55,7 @@
     </main>
 
     <footer>
-        <p>&copy; 2025 Portal de Notícias - Todos os direitos reservados</p>
+        <p>&copy; 2025 Conecta ZL: Notícias que nos unem - Todos os direitos reservados</p>
     </footer>
 
     {% block scripts %}{% endblock %}

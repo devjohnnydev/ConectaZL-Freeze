@@ -1,75 +1,112 @@
 {% extends 'base.html' %}
 
-{% block title %}Início - Portal de Notícias{% endblock %}
+{% block title %}Início - Conecta ZL{% endblock %}
 
 {% block content %}
-<div class="hero">
-    <h1>🌟 Bem-vindo ao Portal de Notícias</h1>
-    <p>As melhores notícias, sempre atualizadas para você!</p>
-</div>
-
-{% if featured_articles %}
-<div class="mb-8">
-    <h2 class="section-header">⭐ Notícias em Destaque</h2>
-    <div class="grid">
-        {% for article in featured_articles %}
-            <article class="card">
-                {% if article.image %}
-                    <img src="{{ article.image.url }}" alt="{{ article.title }}" class="card-image">
-                {% else %}
-                    <div class="card-image"></div>
-                {% endif %}
-                <div class="card-content">
-                    <h3 class="card-title">{{ article.title }}</h3>
-                    <div class="card-meta">
-                        📅 {{ article.created_at|date:"d/m/Y H:i" }} | ✍️ {{ article.author.username }}
-                    </div>
-                    <p class="card-excerpt">{{ article.excerpt|truncatewords:20 }}</p>
-                    <div class="card-footer">
-                        <a href="{% url 'article_detail' article.slug %}" class="card-link">Leia mais →</a>
-                        <div class="card-stats">
-                            <span>❤️ {{ article.total_likes }}</span>
-                            <span>👁️ {{ article.views }}</span>
-                        </div>
-                    </div>
+<!-- Hero Banner Roxo -->
+<div class="hero-banner">
+    <div class="hero-content-wrapper">
+        <div class="hero-left">
+            <div class="hero-brand">
+                <span class="hero-brand-icon">C</span>
+                <div>
+                    <h2 class="hero-brand-title">Conecta ZL</h2>
+                    <p class="hero-brand-subtitle">Notícias que nos unem.</p>
                 </div>
-            </article>
-        {% endfor %}
+            </div>
+        </div>
+        <div class="hero-right">
+            <div class="hero-message-box">
+                <h1 class="hero-title">Conectando a Comunidade com Fatos e Notícias do Bairro!</h1>
+                <a href="#noticias" class="hero-button">Leia Agora →</a>
+            </div>
+        </div>
     </div>
 </div>
-{% endif %}
 
-<h2 class="section-header">📰 Todas as Notícias</h2>
-<div class="grid">
-    {% for article in articles %}
-        <article class="card">
-            {% if article.image %}
-                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="card-image">
+<!-- Seção de Interação -->
+<div class="interaction-section">
+    <div class="interaction-card">
+        <div class="interaction-header">
+            <div class="user-prompt">
+                <div class="user-icon"></div>
+                <span>O que está acontecendo no seu bairro?</span>
+            </div>
+        </div>
+        <div class="interaction-actions">
+            {% if user.is_authenticated %}
+                {% if user.profile.role in 'jornalista,admin' %}
+                <a href="{% url 'article_create' %}" class="media-button">
+                    <span class="media-icon">📸</span> Foto/Vídeo
+                </a>
+                {% else %}
+                    <span class="media-button" style="opacity: 0.6; cursor: not-allowed;">
+                        <span class="media-icon">📸</span> Foto/Vídeo
+                    </span>
+                {% endif %}
             {% else %}
-                <div class="card-image"></div>
+                <a href="{% url 'login' %}" class="media-button">
+                    <span class="media-icon">📸</span> Foto/Vídeo
+                </a>
             {% endif %}
-            <div class="card-content">
-                <h3 class="card-title">{{ article.title }}</h3>
-                <div class="card-meta">
-                    📅 {{ article.created_at|date:"d/m/Y H:i" }} | ✍️ {{ article.author.username }}
-                </div>
-                <p class="card-excerpt">{{ article.excerpt|truncatewords:15 }}</p>
-                <div class="card-footer">
-                    <a href="{% url 'article_detail' article.slug %}" class="card-link">Leia mais →</a>
-                    <div class="card-stats">
-                        <span>❤️ {{ article.total_likes }}</span>
-                        <span>👁️ {{ article.views }}</span>
+        </div>
+    </div>
+</div>
+
+<!-- Tab Navigation -->
+<div class="news-tabs">
+    <button class="news-tab active">Bairro</button>
+    <button class="news-tab">Principais Notícias</button>
+</div>
+
+<!-- News Grid -->
+<div id="noticias" class="news-grid">
+    {% for article in articles %}
+        <article class="news-card">
+            <div class="news-card-header">
+                <div class="author-info">
+                    <div class="author-avatar">{{ article.author.username|slice:":1"|upper }}</div>
+                    <div class="author-details">
+                        <span class="author-name">{{ article.author.username }}</span>
+                        <span class="news-date">{{ article.created_at|date:"d 'de' F 'de' Y" }}</span>
                     </div>
                 </div>
+                {% if user.is_authenticated and user.profile.role == 'admin' or article.author == user %}
+                    <span class="news-badge badge-urgente">Urgente</span>
+                {% endif %}
+            </div>
+            
+            <h3 class="news-card-title">{{ article.title }}</h3>
+            <p class="news-card-excerpt">{{ article.excerpt|truncatewords:30 }}</p>
+            
+            {% if article.image %}
+            <div class="news-card-images">
+                <img src="{{ article.image.url }}" alt="{{ article.title }}" class="news-image">
+            </div>
+            {% endif %}
+            
+            <div class="news-card-actions">
+                <button class="action-btn" onclick="window.location.href='{% url 'article_detail' article.slug %}'">
+                    <span>🔍</span>
+                </button>
+                <button class="action-btn">
+                    <span>❤️</span> <span class="action-count">{{ article.total_likes }}</span>
+                </button>
+                <button class="action-btn">
+                    <span>💬</span>
+                </button>
+                <button class="action-btn">
+                    <span>📤</span>
+                </button>
             </div>
         </article>
     {% empty %}
-        <div class="empty-state" style="grid-column: 1 / -1;">
-            <div class="empty-state-icon">📭</div>
-            <p class="empty-state-text">Nenhuma notícia publicada ainda.</p>
+        <div class="empty-state-modern">
+            <div class="empty-icon">📭</div>
+            <p class="empty-text">Nenhuma notícia publicada ainda.</p>
             {% if user.is_authenticated %}
                 {% if user.profile.role == 'jornalista' or user.profile.role == 'admin' %}
-                    <a href="{% url 'article_create' %}" class="btn btn-primary mt-4">✍️ Criar Primeira Notícia</a>
+                    <a href="{% url 'article_create' %}" class="btn btn-primary mt-4">Criar Primeira Notícia</a>
                 {% endif %}
             {% endif %}
         </div>

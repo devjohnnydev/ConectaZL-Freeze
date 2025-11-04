@@ -4,6 +4,7 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.utils.text import slugify
+from django.db import models
 from .models import Article, Like
 from comments.models import Comment
 import folium
@@ -205,4 +206,71 @@ def toggle_like(request, article_id):
     return JsonResponse({
         'liked': liked,
         'total_likes': article.total_likes()
+    })
+
+
+def highlights_page(request):
+    from django.db.models import Count
+    
+    featured_articles = Article.objects.filter(
+        published=True, 
+        approval_status='approved', 
+        featured=True
+    ).order_by('-created_at')
+    
+    most_liked = Article.objects.filter(
+        published=True, 
+        approval_status='approved'
+    ).annotate(
+        likes_count=Count('likes')
+    ).filter(likes_count__gt=0).order_by('-likes_count')[:6]
+    
+    most_commented = Article.objects.filter(
+        published=True, 
+        approval_status='approved'
+    ).annotate(
+        comments_count=Count('comments', filter=models.Q(comments__approved=True))
+    ).filter(comments_count__gt=0).order_by('-comments_count')[:6]
+    
+    return render(request, 'articles/highlights.html', {
+        'featured_articles': featured_articles,
+        'most_liked': most_liked,
+        'most_commented': most_commented
+    })
+
+
+def news_feed(request):
+    articles_list = Article.objects.filter(
+        published=True, 
+        approval_status='approved'
+    ).select_related('author', 'author__profile').order_by('-created_at')
+    
+    paginator = Paginator(articles_list, 10)
+    page_number = request.GET.get('page')
+    articles = paginator.get_page(page_number)
+    
+    return render(request, 'articles/news_feed.html', {
+        'articles': articles
+    })
+
+
+def journalist_profile(request, username):
+    from django.contrib.auth.models import User
+    journalist = get_object_or_404(User, username=username)
+    
+    user_articles = Article.objects.filter(
+        author=journalist,
+        published=True,
+        approval_status='approved'
+    ).order_by('-created_at')
+    
+    total_likes = sum(article.total_likes() for article in user_articles)
+    total_views = sum(article.views for article in user_articles)
+    
+    return render(request, 'articles/journalist_profile.html', {
+        'journalist': journalist,
+        'articles': user_articles,
+        'total_articles': user_articles.count(),
+        'total_likes': total_likes,
+        'total_views': total_views
     })

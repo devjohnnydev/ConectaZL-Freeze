@@ -28,6 +28,9 @@ urlpatterns = [
     path('summernote/', include('django_summernote.urls')),
     
     path('', article_views.home, name='home'),
+    path('destaques/', article_views.highlights_page, name='highlights'),
+    path('noticias/', article_views.news_feed, name='news_feed'),
+    path('jornalista/<str:username>/', article_views.journalist_profile, name='journalist_profile'),
     path('article/create/', article_views.article_create, name='article_create'),
     path('article/<slug:slug>/', article_views.article_detail, name='article_detail'),
     path('article/<slug:slug>/edit/', article_views.article_edit, name='article_edit'),
