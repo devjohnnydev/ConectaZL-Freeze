@@ -2,14 +2,14 @@
 
 {% block title %}Início - Conecta ZL{% endblock %}
 
-{% block content %}
+{% block fullwidth %}
 <!-- Hero Banner Roxo -->
 <div class="hero-banner">
     <div class="hero-content-wrapper">
         <div class="hero-left">
             <div class="hero-brand">
                 {% load static %}
-                <img src="{% static 'images/logo.png' %}" alt="Conecta ZL" class="hero-brand-logo">
+                <img src="{% static 'images/logo_new.png' %}" alt="Conecta ZL" class="hero-brand-logo">
                 <div>
                     <h2 class="hero-brand-title">Conecta ZL</h2>
                     <p class="hero-brand-subtitle">Notícias que nos unem.</p>
@@ -24,7 +24,9 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block content %}
 <!-- Seção de Interação -->
 <div class="interaction-section">
     <div class="interaction-card">

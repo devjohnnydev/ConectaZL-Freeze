@@ -15,10 +15,6 @@
         <div class="nav-container">
             <a href="{% url 'home' %}" class="nav-brand">
                 <img src="{% static 'images/logo_new.png' %}" alt="Conecta ZL" class="brand-logo">
-                <div class="brand-text-container">
-                    <span class="brand-text">Conecta ZL</span>
-                    <span class="brand-tagline">Notícias que nos unem</span>
-                </div>
             </a>
             <div class="nav-links-center">
                 <a href="{% url 'home' %}" class="nav-link">INÍCIO</a>
@@ -53,6 +49,8 @@
             {% endfor %}
         </div>
     {% endif %}
+
+    {% block fullwidth %}{% endblock %}
 
     <main class="container">
         {% block content %}{% endblock %}
