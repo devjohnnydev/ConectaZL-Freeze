@@ -21,3 +21,6 @@ tzdata==2025.2
 urllib3==2.5.0
 webencodings==0.5.1
 xyzservices==2025.11.0
+gunicorn
+dj-database-url
+whitenoise
